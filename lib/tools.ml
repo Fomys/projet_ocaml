@@ -14,8 +14,7 @@ let add_arc (gr:'a graph) source destination weight =
     e_fold gr (fun gr id1 id2 lbl -> if id1 = source && id2 = destination then new_arc gr id1 id2 (lbl+weight) else new_arc gr id1 id2 lbl ) (clone_nodes gr)
 *)
 
-let add_arc (gr:'a graph) source dstination weight = 
+let add_arc (gr:'a graph) source destination weight =
   match find_arc gr source destination with
   | None -> new_arc gr source destination weight
   | Some lbl -> new_arc gr source destination (lbl+weight) (*il écrase donc l'ancier arc*)
-   
