@@ -1,4 +1,5 @@
 open Projet.Gfile
+open Projet.Tools
 
 let () =
 
@@ -28,8 +29,20 @@ let () =
   (* Open file *)
   let graph = from_file infile in
 
+  (*  ******  TEST  ******  *)
+
+  (* Test clone_nodes *)
+
+  let graph_sans_arc = clone_nodes graph in
+
+  (*  ******  ****  ******  *)
+
+
   (* Rewrite the graph that has been read. *)
-  let () = write_file outfile graph in
+  let () = write_file outfile graph_sans_arc in
+
+
+
 
   ()
 
