@@ -28,21 +28,16 @@ let () =
 
   (* Open file *)
   let graph = from_file infile in
+  let int_graph = gmap graph (fun v -> int_of_string v) in
 
-  (*  ******  TEST  ******  *)
 
-  (* Test clone_nodes *)
-
-  let graph_sans_arc = clone_nodes graph in
-
-  (*  ******  ****  ******  *)
+  let out_graph = add_arc int_graph 0 2 2341 in
 
 
   (* Rewrite the graph that has been read. *)
-  let () = write_file outfile graph_sans_arc in
-
-
-
+  let str_graph = gmap out_graph (fun v -> string_of_int v) in
+  let () = write_file outfile str_graph in
+  let () = export "test.dot" str_graph in
 
   ()
 

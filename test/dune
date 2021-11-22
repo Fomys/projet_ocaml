@@ -1,2 +1,3 @@
 (test
- (name projet))
+ (name projet)
+ (libraries projet))

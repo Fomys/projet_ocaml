@@ -99,3 +99,15 @@ let from_file path =
   close_in infile ;
   final_graph
 
+let export path graph =
+    let ff = open_out path in
+    fprintf ff "digraph finite_state_machine {\nrankdir=LR;\nsize=\"8,5\";\nnode [shape = circle];\n" ;
+
+    (* Write all nodes (with fake coordinates) *)
+    e_iter graph (
+        fun source destination v -> fprintf ff "%d -> %d [label = \"%s\"];\n" source destination v
+    ) ;
+    fprintf ff "}" ;
+
+    close_out ff ;
+    ()
