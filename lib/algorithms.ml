@@ -1,6 +1,7 @@
 open Tools
 open Graph
 open List
+
 (* let ford_fulkerson_rec gr_cap gr_flot source sink = ()
 
 let ford_fulkerson gr source sink = ford_fulkerson_rec gr (clone_nodes gr) source sink *)
@@ -45,7 +46,6 @@ let graph_gap gr_cap gr_flot =
         )
         (clone_nodes gr_cap)
 
-
 let rec get_min_on_path_rec graph path poids_min =
     match path with
         | [] -> poids_min
@@ -62,7 +62,14 @@ let get_min_on_path graph path =
         | Some(w) -> w
 
 
-let update_flot gr_flot _ _ = gr_flot
+let rec update_flot gr_flot path min = 
+    match path with 
+        | [] -> gr_flot 
+        | (node1,node2)::rest -> match find_arc gr_flot node1 node2 with 
+                                     | None -> update_flot ( new_arc gr_flot node1 node2 min ) rest min
+                                     | Some w -> update_flot ( new_arc gr_flot node1 node2 ( w + min ) ) rest min
+                                 
+
 
 let ford_fulkerson_rec gr_cap gr_flot source sink =
     match find_path_source_to_sink (graph_gap gr_cap gr_flot) source sink with
