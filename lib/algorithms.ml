@@ -1,7 +1,7 @@
 open Tools
 open Graph
 open List
-
+open Printf
 (* let ford_fulkerson_rec gr_cap gr_flot source sink = ()
 
 let ford_fulkerson gr source sink = ford_fulkerson_rec gr (clone_nodes gr) source sink *)
@@ -39,38 +39,48 @@ let find_path_source_to_sink gr source sink = explore gr source [source] sink
 
 let graph_gap gr_cap gr_flot =
         e_fold gr_cap (
-            fun gr_gap source destination cap ->
-                match find_arc gr_flot source destination with
-                    | None -> add_arc gr_gap source destination cap;
-                    | Some v -> add_arc (add_arc gr_gap destination source (v)) source destination (cap - v)
+            fun gr_gap origine destination cap ->
+                match find_arc gr_flot origine destination with
+                    | None -> add_arc gr_gap origine destination cap;
+                    | Some v -> add_arc (add_arc gr_gap destination origine (v)) origine destination (cap - v)
         )
         (clone_nodes gr_cap)
 
 let rec get_min_on_path_rec graph path poids_min =
     match path with
         | [] -> poids_min
-        | (source, destination)::rest ->
+        | (source, destination) :: rest ->
             match find_arc graph source destination with
-                | None -> 0
-                | Some w -> get_min_on_path_rec graph rest (if w < poids_min then w else poids_min)
+                | None -> None
+                | Some w -> get_min_on_path_rec graph rest (match poids_min with
+                    | None -> Some(w)
+                    | Some(w2) -> Some(if w2 < w then w2 else w))
+
 
 let get_min_on_path graph path =
-    get_min_on_path_rec graph path 0
+    match get_min_on_path_rec graph path None with
+        | None -> 0
+        | Some(w) -> w
+
 
 let rec update_flot gr_flot path min = 
     match path with 
         | [] -> gr_flot 
-        | (node1,node2)::rest -> match find_arc gr_flot node1 node2 with 
-                                     | None -> update_flot ( new_arc gr_flot node1 node2 min ) rest min
-                                     | Some w -> update_flot ( new_arc gr_flot node1 node2 ( w + min ) ) rest min
+        | (node1,node2) :: rest -> match find_arc gr_flot node1 node2 with
+                                     | None -> update_flot (new_arc gr_flot node1 node2 min) rest min
+                                     | Some w -> update_flot (new_arc gr_flot node1 node2 (w + min)) rest min
                                  
 
 
-
-let ford_fulkerson_rec gr_cap gr_flot source sink =
+let rec ford_fulkerson_rec gr_cap gr_flot source sink =
     match find_path_source_to_sink (graph_gap gr_cap gr_flot) source sink with
         | [] -> gr_flot
-        | path -> update_flot gr_flot path (get_min_on_path gr_flot path )
+        | path ->
+            let min = get_min_on_path (graph_gap gr_cap gr_flot) path in
+                List.iter (fun (a,b)->printf "%d->%d\t" a b) path;
+                printf "Min: %d\n" min;
+                ford_fulkerson_rec gr_cap (update_flot gr_flot path (min)) source sink
 
-let ford_fulkerson gr source sink =
-    ford_fulkerson_rec gr (clone_nodes gr) source sink
+
+let ford_fulkerson gr_cap source sink =
+    ford_fulkerson_rec gr_cap (clone_nodes gr_cap) source sink
