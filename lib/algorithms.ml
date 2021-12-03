@@ -2,16 +2,7 @@ open Tools
 open Graph
 open List
 open Printf
-(* let ford_fulkerson_rec gr_cap gr_flot source sink = ()
 
-let ford_fulkerson gr source sink = ford_fulkerson_rec gr (clone_nodes gr) source sink *)
-
-
- (* creation graphe résiduel
- cherche chemin source -> sink : pas de chemin on renvoi gr_flot
-                               : sinon cherche valeur minimal du chemin
-                                       gr_flot devient gr-flot avec + valeur minimal sur le chemin
-                                       ford_fulkerson_rec gr_cap gr_flot source sink *)
 
 let rec explore gr node node_mark sink =
 
