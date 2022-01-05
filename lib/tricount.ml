@@ -1,8 +1,9 @@
 open Graph
+open Tools
 
 let try_add_node gr feeder_id =
     if node_exists gr feeder_id then gr
-    else let graph = (feeder_id, []) :: gr in
+    else let graph = new_node gr feeder_id in
         n_fold graph ( fun gr node -> new_arc (new_arc gr feeder_id node Float.infinity) node feeder_id Float.infinity ) graph
 
 let rec get_id_for_name names name = (*recherche le tupple nom et id associé*)
@@ -19,7 +20,7 @@ let read_file path =
     let infile = open_in path in
     let add_indebted shared_amount (graph, names) name =
         let (names, indebted_id) = get_id_for_name names name in
-        let graph = new_node graph indebted_id in
+        let graph = try_add_node graph indebted_id in
         let graph = add_arc graph 0 indebted_id shared_amount in
         (graph, names)
     in
@@ -37,7 +38,7 @@ let read_file path =
                         let amount = float_of_string (List.nth line 1) in
                         let shared_amount = amount /. Float.of_int (List.length indebted) in
                         let (names, feeder_id) = get_id_for_name names feeder in
-                        let graph = new_node graph feeder_id in
+                        let graph = try_add_node graph feeder_id in
                         let graph = add_arc graph feeder_id 1 amount in
                         let (graph, names) = List.fold_left (add_indebted shared_amount) (graph, names) indebted in
                         loop graph names
