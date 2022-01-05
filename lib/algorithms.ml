@@ -57,11 +57,23 @@ let get_min_on_path graph path = (*adapte get_min_on_path_rec pour une utilisati
 let rec update_flot gr_flot path min = (*modifie le graphe de flot en lui ajoutant min au poids de chaque arc de path*)
     match path with (*pour tous les arcs du path*)
         | [] -> gr_flot (*si on a finit de modifier le path, je renvoie le graphe de flot mise à jour*)
-        | (node1,node2) :: rest -> match find_arc gr_flot node1 node2 with 
-                                     | Some w -> update_flot (new_arc gr_flot node1 node2 (w +. min)) rest min (*si l'arc du path existe dans le graphe de flot, je le met à jour puis je continue la modification*)
-                                     | None -> match find_arc gr_flot node2 node1 with
-                                        | None -> update_flot (new_arc gr_flot node1 node2 min) rest min (*si son opposé n'existe pas non plus dans le graphe de flot, je créée l'arc puis continue la modification*)
-                                        | Some w -> update_flot (new_arc (new_arc gr_flot node2 node1 (min -. w)) node1 node2 (w -. min)) rest min (*si son opposé existe dans le graphe de flot, je le créée l'arc, met à jour son opposé puis continue la modification*)
+        | (node1,node2) :: rest ->
+            match (find_arc gr_flot node1 node2, find_arc gr_flot node2 node1) with
+                 | (Some w, None) | (Some w, Some 0.0) -> update_flot (new_arc gr_flot node1 node2 (w +. min)) rest min (*si l'arc du path existe dans le graphe de flot, je le met à jour puis je continue la modification*)
+                 | (None, None) -> update_flot (new_arc gr_flot node1 node2 min) rest min (*si son opposé n'existe pas non plus dans le graphe de flot, je créée l'arc puis continue la modification*)
+                 | (None, Some w) | (Some 0.0, Some w) ->
+                    if w < min then
+                        update_flot (new_arc (new_arc gr_flot node2 node1 0.0) node1 node2 (min -. w)) rest min
+                    else
+                        update_flot (new_arc (new_arc gr_flot node1 node2 0.0) node2 node1 (w -. min)) rest min
+                 | (Some _, Some _) ->
+                    begin
+                        Printf.printf "Oulàà";
+                        update_flot gr_flot rest min
+                    end
+                        (*si son opposé existe dans le graphe de flot, je le créée l'arc, met à jour son opposé puis continue la modification*)
+(*                 | (Some w1, Some w2) -> update_flot (new_arc (new_arc gr_flot node2 node1 (min -. w)) node1 node2 (w1 +. min)) rest min*)
+
 
 
 let rec ford_fulkerson_rec gr_cap gr_flot source sink =

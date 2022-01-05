@@ -1,6 +1,7 @@
 open Graph
 open Tools
 open Algorithms
+open Gfile
 open Printf
 
 let try_add_node gr feeder_id =
@@ -56,7 +57,7 @@ let export_tricount out_file solved names =
     fprintf ff "Les bons comptes font les bons amis \n" ;
     e_iter solved (
         fun source destination v ->
-            if source = 0 || destination = 0 then ()
+            if source < 2 || destination < 2 then ()
             else fprintf ff "%s doit à %s %f €\n" (List.nth names (source-2)) (List.nth names (destination-2)) v
     ) ;
 
@@ -65,7 +66,8 @@ let export_tricount out_file solved names =
 
 let solve_tricount in_file out_file =
     let (graph, names) = read_file in_file in
-                        Printf.printf "Coucou\n%!";
+    export  "tmp.dot" (gmap graph (fun v -> string_of_float v));
+
     let solved = ford_fulkerson graph 0 1 in
-                        Printf.printf "Coucou\n%!";
+    export  "tmp2.dot" (gmap solved (fun v -> string_of_float v));
     export_tricount out_file solved names

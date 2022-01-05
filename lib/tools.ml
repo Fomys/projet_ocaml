@@ -17,4 +17,4 @@ let add_arc (gr:'a graph) source destination weight =
 let add_arc (gr:'a graph) source destination weight =
   match find_arc gr source destination with
   | None -> new_arc gr source destination weight
-  | Some lbl -> new_arc gr source destination (lbl+.weight) (*il écrase donc l'ancier arc*)
+  | Some lbl -> new_arc gr source destination (lbl +. weight) (*il écrase donc l'ancier arc*)
