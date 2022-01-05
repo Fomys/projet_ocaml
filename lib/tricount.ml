@@ -56,7 +56,8 @@ let export_tricount out_file solved names =
     fprintf ff "Les bons comptes font les bons amis \n" ;
     e_iter solved (
         fun source destination v ->
-            fprintf ff "%s doit à %s %f €\n" (List.nth names (source-2)) (List.nth names (destination-2)) v
+            if source = 0 || destination = 0 then ()
+            else fprintf ff "%s doit à %s %f €\n" (List.nth names (source-2)) (List.nth names (destination-2)) v
     ) ;
 
     close_out ff ;
