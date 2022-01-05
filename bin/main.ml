@@ -5,6 +5,7 @@ open Projet.Algorithms
 let () =
   let graph_capacite = from_file "graph2.gr" in
   let graph_capacite_int = gmap graph_capacite (fun v -> int_of_string v) in
+
   let graph_flot_fulkerson = ford_fulkerson graph_capacite_int 0 12 in
 
 

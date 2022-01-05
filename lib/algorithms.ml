@@ -58,9 +58,10 @@ let rec update_flot gr_flot path min =
     match path with 
         | [] -> gr_flot 
         | (node1,node2) :: rest -> match find_arc gr_flot node1 node2 with
-                                     | None -> update_flot (new_arc gr_flot node1 node2 min) rest min
                                      | Some w -> update_flot (new_arc gr_flot node1 node2 (w + min)) rest min
-                                 
+                                     | None -> match find_arc gr_flot node2 node1 with
+                                        | None -> update_flot (new_arc gr_flot node1 node2 min) rest min
+                                        | Some w -> update_flot (new_arc (new_arc gr_flot node2 node1 (min - w)) node1 node2 (w - min)) rest min
 
 
 let rec ford_fulkerson_rec gr_cap gr_flot source sink =
