@@ -4,7 +4,7 @@ open Tools
 let try_add_node gr feeder_id =
     if node_exists gr feeder_id then gr
     else let graph = new_node gr feeder_id in
-        n_fold graph ( fun gr node -> new_arc (new_arc gr feeder_id node Float.infinity) node feeder_id Float.infinity ) graph
+        n_fold graph ( fun gr node -> if node = 0 or node = 1 then gr else new_arc (new_arc gr feeder_id node Float.infinity) node feeder_id Float.infinity ) graph
 
 let rec get_id_for_name names name = (*recherche le tupple nom et id associé*)
     match names with
@@ -24,23 +24,23 @@ let read_file path =
         let graph = add_arc graph 0 indebted_id shared_amount in
         (graph, names)
     in
-    let rec loop graph names =
+    let rec loop graph names = (*création du graphe et de ces correspondances nom id*)
         try
-            let line = input_line infile in
-            let line = String.trim line in
-            if line = "" then (graph, names)
-            else
-                let line = String.split_on_char ' ' line in
-                    if List.length line < 3 then (graph, names)
+            let line = input_line infile in (*lecture de la ligne*)
+            let line = String.trim line in (*enlève espace et retour à la ligne en trop*)
+            if line = "" then (graph, names) (*si la ligne est vide, retrourne le graphe et les correspondances nom id*)
+            else 
+                let line = String.split_on_char ' ' line in (*sépart la ligne en liste de mots (=> les noms ne peuvent pas contenir d'espace)*)
+                    if List.length line < 3 then (graph, names) (*si la ligne n'a pas d'information valident, retourn le graphe et les correspondances nom id*)
                     else
-                        let feeder = List.nth line 0 in
-                        let indebted = List.tl (List.tl line) in
-                        let amount = float_of_string (List.nth line 1) in
-                        let shared_amount = amount /. Float.of_int (List.length indebted) in
-                        let (names, feeder_id) = get_id_for_name names feeder in
-                        let graph = try_add_node graph feeder_id in
-                        let graph = add_arc graph feeder_id 1 amount in
-                        let (graph, names) = List.fold_left (add_indebted shared_amount) (graph, names) indebted in
+                        let feeder = List.nth line 0 in (*feeder = premier mots*)
+                        let amount = float_of_string (List.nth line 1) in (*amount = deuxième mot convertit en int*)
+                        let indebted = List.tl (List.tl line) in (*indebted = ensemble des mots excétés le premier et le deuxième*)
+                        let shared_amount = amount /. Float.of_int (List.length indebted) in (*shared_amount = prix identique pour chaque endetté*)
+                        let (names, feeder_id) = get_id_for_name names feeder in (*ajoute l'id du feeder à names*)
+                        let graph = try_add_node graph feeder_id in (*ajoute les arcs aller retour entre le feeder et toutes les personnes déjà presentes*)
+                        let graph = add_arc graph feeder_id 1 amount in (*ajoute un arc du feeder vers sink d'un poids d'ammount*)
+                        let (graph, names) = List.fold_left (add_indebted shared_amount) (graph, names) indebted in (*ajoute un arc du feeder vers sink d'un poids d'ammount*)
                         loop graph names
         with End_of_file -> (graph, names)
     in
