@@ -8,6 +8,7 @@ Implémentation de Tricount (partage des dépenses) dans lib/tricount.ml
 
 # Compilation
 dune build
+
 ./_build/default/bin/tricount.exe [fichier_d_entree] [fichier_de_sortie]
 
 # Format de fichier d'entrée
