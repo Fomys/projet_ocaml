@@ -1,5 +1,7 @@
 open Graph
 open Tools
+open Algorithms
+open Printf
 
 let try_add_node gr feeder_id =
     if node_exists gr feeder_id then gr
@@ -49,10 +51,20 @@ let read_file path =
     close_in infile;
     (final_graph, names)
 
-let export_tricount out_file graph =
+let export_tricount out_file solved names =
+    let ff = open_out out_file in
+    fprintf ff "Les bons comptes font les bons amis \n" ;
+    e_iter solved (
+        fun source destination v ->
+            fprintf ff "%s doit à %s %f €\n" (List.nth names (source-2)) (List.nth names (destination-2)) v
+    ) ;
+
+    close_out ff ;
     ()
 
-let solve_tricount in_file _ =
+let solve_tricount in_file out_file =
     let (graph, names) = read_file in_file in
-    let solved = ford_fulkerson 
-    export_tricount (ford_fulkerson (read_file in_file))
+                        Printf.printf "Coucou\n%!";
+    let solved = ford_fulkerson graph 0 1 in
+                        Printf.printf "Coucou\n%!";
+    export_tricount out_file solved names
