@@ -6,7 +6,7 @@ open Printf
 let try_add_node gr feeder_id =
     if node_exists gr feeder_id then gr
     else let graph = new_node gr feeder_id in
-        n_fold graph ( fun gr node -> if node = 0 or node = 1 then gr else new_arc (new_arc gr feeder_id node Float.infinity) node feeder_id Float.infinity ) graph
+        n_fold graph ( fun gr node -> if node = 0 ||  node = 1 then gr else new_arc (new_arc gr feeder_id node Float.infinity) node feeder_id Float.infinity ) graph
 
 let rec get_id_for_name names name = (*recherche le tupple nom et id associé*)
     match names with
