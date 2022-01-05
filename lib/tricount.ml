@@ -44,10 +44,15 @@ let read_file path =
                         loop graph names
         with End_of_file -> (graph, names)
     in
-    let (final_graph, names) = loop empty_graph [] in
+    let initial_graph = new_node (new_node empty_graph 0) 1 in
+    let (final_graph, names) = loop initial_graph [] in
     close_in infile;
     (final_graph, names)
 
-let solve_tricount in_file _ =
-    let _ = read_file in_file in
+let export_tricount out_file graph =
     ()
+
+let solve_tricount in_file _ =
+    let (graph, names) = read_file in_file in
+    let solved = ford_fulkerson 
+    export_tricount (ford_fulkerson (read_file in_file))
