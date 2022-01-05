@@ -1,0 +1,1 @@
+val solve_tricount: string -> string -> unit

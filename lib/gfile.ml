@@ -120,10 +120,7 @@ let export path graph =
     (* Write all nodes (with fake coordinates) *)
     e_iter graph (
         fun source destination v ->
-            if (v = 0) then
-                fprintf ff "%d -> %d [label = \"%s\"];\n" source destination v
-            else
-                ()
+            fprintf ff "%d -> %d [label = \"%s\"];\n" source destination v
     ) ;
     fprintf ff "}" ;
 
